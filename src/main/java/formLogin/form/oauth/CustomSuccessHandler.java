@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 @Component
@@ -27,16 +28,16 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         System.out.println("here is oauth success");
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        String username = oAuth2User.getUsername();
+        String name = oAuth2User.getName();
 
         Collection<? extends GrantedAuthority> authorities = oAuth2User.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
+        String token = jwtUtil.createJwt(name, role, 1000L * 60 * 5);
         response.addCookie(createCookie("Authorization",token));
-        response.sendRedirect("http://localhost:3000/");
+//        response.sendRedirect("http://localhost:3000/");
     }
 
     private Cookie createCookie(String key,String value) {

@@ -28,12 +28,14 @@ public class JWTFilter extends OncePerRequestFilter {
         Cookie[] cookies = request.getCookies();
 
         if (cookies == null) {
+            System.out.println("cookies is null");
             filterChain.doFilter(request,response);
             return;
         }
 
+        System.out.println("start get cookies name");
         for (Cookie cookie : cookies) {
-            System.out.println(cookie.getName());
+            System.out.println(cookie.getName() + " : " + cookie.getValue());
             if (cookie.getName().equals("Authorization")) {
                 authorization = cookie.getValue();
             }
@@ -41,7 +43,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //Authorization 헤더 검증
         if (authorization == null) {
-            System.out.println("token null");
+            System.out.println("token(Authorization header) null");
             filterChain.doFilter(request, response);
             //조건이 해당되면 메소드 종료 (필수)
             return;
@@ -64,7 +66,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //userDTO를 생성하여 값 set
         UserDto userDto = new UserDto();
-        userDto.setUsername(username);
+        userDto.setName(username);
         userDto.setRole(role);
 
         //UserDetails에 회원 정보 객체 담기

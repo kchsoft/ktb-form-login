@@ -6,8 +6,20 @@ import lombok.Setter;
 
 @Getter @Setter
 public class UserDto {
-
-    private String name;
-    private String username;
+    private String koreanName;
+    private String englishName;
+    private String course;
+    private String email;
     private String role;
+    private String name;
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "koreanName='" + koreanName + '\'' +
+                ", englishName='" + englishName + '\'' +
+                ", course='" + course + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

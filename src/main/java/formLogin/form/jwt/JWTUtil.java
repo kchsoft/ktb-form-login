@@ -1,6 +1,9 @@
 package formLogin.form.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +16,12 @@ import java.util.Date;
 public class JWTUtil {
 
     private SecretKey secretKey;
+    private final JWTBlacklist jwtBlacklist;
 
-    public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
+    @Autowired
+    public JWTUtil(@Value("${spring.jwt.secret}") String secret, JWTBlacklist jwtBlacklist) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.jwtBlacklist = jwtBlacklist;
     }
 
     public String getUsername(String token) {
@@ -29,8 +35,12 @@ public class JWTUtil {
     }
 
     public Boolean isExpired(String token) {
-
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+    }
+
+    public void addToBlacklist(String token) {
+        Claims payload = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+        jwtBlacklist.addToken(token,payload.getExpiration());
     }
 
 

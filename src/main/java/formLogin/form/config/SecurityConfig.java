@@ -2,6 +2,8 @@ package formLogin.form.config;
 
 import formLogin.form.jwt.JWTFilter;
 import formLogin.form.jwt.JWTUtil;
+import formLogin.form.logout.CustomLogoutHandler;
+import formLogin.form.logout.CustomLogoutSuccessHandler;
 import formLogin.form.oauth.CustomSuccessHandler;
 import formLogin.form.service.CustomOauth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,12 +14,15 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -27,6 +32,8 @@ public class SecurityConfig {
 
     private final CustomOauth2UserService oauth2UserService;
     private final CustomSuccessHandler successHandler;
+    private final CustomLogoutHandler logoutHandler;
+    private final CustomLogoutSuccessHandler logoutSuccessHandler;
     private final JWTUtil jwtUtil;
 
     @Bean
@@ -42,11 +49,11 @@ public class SecurityConfig {
                                 configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
-                                configuration.setAllowedHeaders(Collections.singletonList("*"));
-                                configuration.setMaxAge(3600L);
+                                configuration.setAllowedHeaders(Arrays.asList("*"));
+                                configuration.setMaxAge(300L);
 
-                                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                                configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
+
 
                                 return configuration;
                             }
@@ -55,14 +62,19 @@ public class SecurityConfig {
                 .formLogin(auth -> auth.disable())
                 .httpBasic(basic -> basic.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/")
+                        .loginPage("http://localhost:3000/")
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oauth2UserService))
                         .successHandler(successHandler)
-//                        .defaultSuccessUrl("/loginSuccess")
+                        .defaultSuccessUrl("http://localhost:3000/chat")
                 )
+//                .logout(logout -> logout
+//                        .logoutUrl("/logout")
+//                        .addLogoutHandler(logoutHandler)
+//                        .logoutSuccessHandler(logoutSuccessHandler)
+//                        .logoutSuccessUrl("http://localhost:3000/"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/my").permitAll()
+                        .requestMatchers("/","/my","/checkAnswer","/signup","/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
