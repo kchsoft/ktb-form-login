@@ -7,9 +7,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +39,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String token = jwtUtil.createJwt(name, role, 1000L * 60 * 5);
         response.addCookie(createCookie("Authorization",token));
-//        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:3000/chat");
+
+        System.out.println("SecurityContextHolder.getContext() = " + SecurityContextHolder.getContext());
     }
 
     private Cookie createCookie(String key,String value) {

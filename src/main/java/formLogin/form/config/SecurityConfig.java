@@ -21,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,10 +51,11 @@ public class SecurityConfig {
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
                                 configuration.setAllowedHeaders(Arrays.asList("*"));
-                                configuration.setMaxAge(300L);
+                                configuration.setMaxAge(3600L);
 
                                 configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
-
+//                                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+//                                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
 
                                 return configuration;
                             }
@@ -66,15 +68,14 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oauth2UserService))
                         .successHandler(successHandler)
-                        .defaultSuccessUrl("http://localhost:3000/chat")
                 )
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout")
-//                        .addLogoutHandler(logoutHandler)
-//                        .logoutSuccessHandler(logoutSuccessHandler)
-//                        .logoutSuccessUrl("http://localhost:3000/"))
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler(logoutSuccessHandler)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/my","/checkAnswer","/signup","/logout").permitAll()
+                        .requestMatchers("/","/my","/checkAnswer","/signup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -83,5 +84,20 @@ public class SecurityConfig {
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .build();
     }
+
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // 와일드카드 대신 특정 출처 사용
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+//        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
+//        configuration.setAllowCredentials(true); // credentials를 포함한 요청 허용
+//        configuration.setMaxAge(3600L); // 1시간 동안 캐시
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
 }

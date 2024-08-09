@@ -19,7 +19,10 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(0); // 쿠키 만료 시간 설정
+
         response.addCookie(cookie);
+        response.sendRedirect("/");
+
     }
 }
 

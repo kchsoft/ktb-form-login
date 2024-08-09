@@ -24,10 +24,13 @@ public class CustomLogoutHandler implements LogoutHandler {
             jwtUtil.addToBlacklist(token);
         }
         // SecurityContextHolder 정리
+        System.out.println("Before SecurityContextHolder.getContext() = " + SecurityContextHolder.getContext());
         System.out.println("security context remove");
         SecurityContextHolder.clearContext();
+        System.out.println("After SecurityContextHolder.getContext() = " + SecurityContextHolder.getContext());
         // 세션 무효화
         if (request.getSession(false) != null) {
+            System.out.println("Sesstion 무효화");
             request.getSession(false).invalidate();
         }
     }
