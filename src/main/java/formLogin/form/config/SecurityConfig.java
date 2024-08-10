@@ -41,25 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
-                            @Override
-                            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
-                                CorsConfiguration configuration = new CorsConfiguration();
-
-                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                                configuration.setAllowedMethods(Collections.singletonList("*"));
-                                configuration.setAllowCredentials(true);
-                                configuration.setAllowedHeaders(Arrays.asList("*"));
-                                configuration.setMaxAge(3600L);
-
-                                configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
-//                                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-//                                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-
-                                return configuration;
-                            }
-                        })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())
                 )
                 .formLogin(auth -> auth.disable())
                 .httpBasic(basic -> basic.disable())
@@ -75,7 +57,7 @@ public class SecurityConfig {
                         .logoutSuccessHandler(logoutSuccessHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/my","/checkAnswer","/signup").permitAll()
+                        .requestMatchers("/checkAnswer","/signup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -85,19 +67,19 @@ public class SecurityConfig {
                 .build();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // 와일드카드 대신 특정 출처 사용
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-//        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
-//        configuration.setAllowCredentials(true); // credentials를 포함한 요청 허용
-//        configuration.setMaxAge(3600L); // 1시간 동안 캐시
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // 와일드카드 대신 특정 출처 사용
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
 }

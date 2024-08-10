@@ -20,6 +20,8 @@ public class UserDto {
                 ", englishName='" + englishName + '\'' +
                 ", course='" + course + '\'' +
                 ", email='" + email + '\'' +
+                ", role='" + role + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

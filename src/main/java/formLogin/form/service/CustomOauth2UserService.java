@@ -43,7 +43,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         if (existData == null) {
 
-            System.out.println("existData == null");
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername(username);
             userEntity.setName(oAuth2Response.getName());
@@ -56,7 +55,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
             return new CustomOAuth2User(userDto);
         } else {
-            System.out.println("existData is exist");
             existData.setUsername(username);
             existData.setName(oAuth2Response.getName());
 
